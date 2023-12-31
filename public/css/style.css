@@ -1,3 +1,25 @@
 * {
     box-sizing: border-box;
 }
+
+body{
+    background-color: grey;
+}
+
+.container{
+    /* justify-content: center; */
+    background-color: aliceblue;
+    width: 40vw;
+    padding: 20px;
+}
+
+#result{
+    background-color: aquamarine;
+    align-items: center;
+    margin: 10px;
+    padding: 5px;
+}
+
+#result label{
+    margin: 0px;
+}

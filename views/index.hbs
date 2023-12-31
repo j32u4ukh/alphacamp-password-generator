@@ -1,2 +1,183 @@
 <div class="container mt-5">
+    <form onsubmit="submitWithAjax()">  
+        {{!-- 下拉選單：密碼長度 --}}
+        <div class="row">
+            <div class="col">
+                <label class="form-label">Password Length</label>
+            </div>
+            <div class="col">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="len-menu" data-bs-toggle="dropdown" aria-expanded="false">
+                        Select the length of the password
+                    </button>
+                    <ul class="dropdown-menu" id="menu-items" aria-labelledby="len-menu">
+                    </ul>
+                    <label class="description">Length is avaliable between 4 ~ 16</label>
+                </div>
+            </div>
+        </div>
+        
+        {{!-- 核選方塊：小寫英文 --}}
+        <div class="row">
+            <div class="col">
+                <label for="exampleFormControlInput1" class="form-label">Include Lowercase Characters</label>
+            </div>
+            <div class="col">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="lowercase">
+                    <label class="form-check-label" for="lowercase">
+                        (e.g. abcd...xyz)
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        {{!-- 核選方塊：大寫英文 --}}
+        <div class="row">
+            <div class="col">
+                <label for="exampleFormControlInput1" class="form-label">Include Uppercase Characters</label>
+            </div>
+            <div class="col">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="uppercase">
+                    <label class="form-check-label" for="uppercase">
+                        (e.g. ABCD...XYZ)
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        {{!-- 核選方塊：數字 --}}
+        <div class="row">
+            <div class="col">
+                <label for="exampleFormControlInput1" class="form-label">Include Numbers</label>
+            </div>
+            <div class="col">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="number">
+                    <label class="form-check-label" for="number">
+                        (e.g. 0123456789)
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        {{!-- 核選方塊：符號 --}}
+        <div class="row">
+            <div class="col">
+                <label for="exampleFormControlInput1" class="form-label">Include Symbols</label>
+            </div>
+            <div class="col">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="symbol">
+                    <label class="form-check-label" for="symbol">
+                        (e.g. @#$%)
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        {{!-- 輸入框：排除字元 --}}
+        <div class="row">
+            <div class="col">
+                <label for="exampleFormControlInput1" class="form-label">Exclude Characters</label>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" placeholder="" aria-label="exclude-characters" id="exclude">
+                <label for="exampleFormControlInput1" class="description">These characters will not appear in the password.</label>
+            </div>
+        </div>
+
+        {{!--  --}}
+        <div id="result" hidden="">
+            <label for="result" class="form-label">Your password is: <span id="pwd"></span></label>
+        </div>
+
+        <button type="submit" class="btn btn-success">Generate Passowrd</button>
+    </form>
 </div>
+
+<script type="text/javascript">
+    const URL = "http://localhost:3000/generate"
+    const form = document.querySelector('form')
+    const items = document.querySelector('#menu-items')
+    const checkInputs = document.querySelectorAll('.form-check-input')
+    let pwdLength = -1
+    let lowercase = false
+    let uppercase = false
+    let number = false
+    let symbol = false
+    const exclude = document.querySelector('#exclude')
+    const result = document.querySelector('#result')
+    const pwd = document.querySelector('#pwd')
+    function init(){
+        for(let i = 4; i <= 16; i++){
+            const li = document.createElement('li')
+            li.innerHTML = `<a class="dropdown-item" href="#" data-value="${i}">${i}</a>`
+            items.appendChild(li)
+        }
+        checkInputs.forEach((check)=>{
+            check.checked = false
+        })
+
+        items.addEventListener('click', function (event) {
+            event.preventDefault();
+            const selectedValue = event.target.getAttribute('data-value');
+            pwdLength = Number(selectedValue)
+            console.log('Selected Value:', pwdLength);
+        });
+
+        form.addEventListener('click', function (event) {
+            const target = event.target
+            if(target.classList.contains('form-check-input')){
+                const checked = target.checked
+                switch(target.id){
+                    case 'lowercase':
+                        lowercase = checked
+                        break
+                    case 'uppercase':
+                        uppercase = checked
+                        break
+                    case 'number':
+                        number = checked
+                        break
+                    case 'symbol':
+                        symbol = checked
+                        break
+                    default:
+                        break
+                }
+            }
+        })
+    }
+    function submitWithAjax() {
+        event.preventDefault()
+        pwd.innerHTML = ""
+        result.hidden = false
+        if(pwdLength === -1){
+            pwd.innerHTML = "You must select the length of the password"
+        }else if(!lowercase && !uppercase && !number && !symbol){
+            pwd.innerHTML = "You must select at least one character set"
+        }else{
+            const jsonData = {
+                len: pwdLength,
+                lowercase: lowercase,
+                uppercase: uppercase,
+                number: number,
+                symbol: symbol,
+                exclude: exclude.value
+            }
+
+            axios
+            .post(URL, jsonData)
+            .then((res)=>{
+                const data = res.data
+                pwd.innerHTML = data.password
+            })
+            .catch((error)=>{
+                console.error(error)
+            })
+        }
+    }
+    init()
+</script>
