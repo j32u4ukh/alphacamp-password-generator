@@ -12,6 +12,7 @@
                     </button>
                     <ul class="dropdown-menu" id="menu-items" aria-labelledby="len-menu">
                     </ul>
+                    <br>
                     <label class="description">Length is avaliable between 4 ~ 16</label>
                 </div>
             </div>
@@ -90,7 +91,7 @@
 
         {{!--  --}}
         <div id="result" hidden="">
-            <label for="result" class="form-label">Your password is: <span id="pwd"></span></label>
+            <label for="result" class="form-label">Your password is:&nbsp;&nbsp;<span id="pwd"></span></label>
         </div>
 
         <button type="submit" class="btn btn-success">Generate Passowrd</button>
@@ -100,6 +101,7 @@
 <script type="text/javascript">
     const URL = "http://localhost:3000/generate"
     const form = document.querySelector('form')
+    const menu = document.querySelector('#len-menu')
     const items = document.querySelector('#menu-items')
     const checkInputs = document.querySelectorAll('.form-check-input')
     let pwdLength = -1
@@ -124,7 +126,7 @@
             event.preventDefault();
             const selectedValue = event.target.getAttribute('data-value');
             pwdLength = Number(selectedValue)
-            console.log('Selected Value:', pwdLength);
+            menu.innerHTML = pwdLength
         });
 
         form.addEventListener('click', function (event) {
