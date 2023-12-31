@@ -6,7 +6,8 @@
                 <label class="form-label">Password Length</label>
             </div>
             <div class="col">
-                <div class="dropdown">
+                <input type="number" min="4" max="16" id="len">
+                {{!-- <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="len-menu" data-bs-toggle="dropdown" aria-expanded="false">
                         Select the length of the password
                     </button>
@@ -14,7 +15,7 @@
                     </ul>
                     <br>
                     <label class="description">Length is avaliable between 4 ~ 16</label>
-                </div>
+                </div> --}}
             </div>
         </div>
         
@@ -102,9 +103,8 @@
     const URL = "http://localhost:3000/generate"
     const form = document.querySelector('form')
     const menu = document.querySelector('#len-menu')
-    const items = document.querySelector('#menu-items')
     const checkInputs = document.querySelectorAll('.form-check-input')
-    let pwdLength = -1
+    const len = document.querySelector('#len')
     let lowercase = false
     let uppercase = false
     let number = false
@@ -113,21 +113,11 @@
     const result = document.querySelector('#result')
     const pwd = document.querySelector('#pwd')
     function init(){
-        for(let i = 4; i <= 16; i++){
-            const li = document.createElement('li')
-            li.innerHTML = `<a class="dropdown-item" href="#" data-value="${i}">${i}</a>`
-            items.appendChild(li)
-        }
+        len.value = ""
+
         checkInputs.forEach((check)=>{
             check.checked = false
         })
-
-        items.addEventListener('click', function (event) {
-            event.preventDefault();
-            const selectedValue = event.target.getAttribute('data-value');
-            pwdLength = Number(selectedValue)
-            menu.innerHTML = pwdLength
-        });
 
         form.addEventListener('click', function (event) {
             const target = event.target
@@ -156,6 +146,7 @@
         event.preventDefault()
         pwd.innerHTML = ""
         result.hidden = false
+        const pwdLength = len.value === "" ? -1 : Number(len.value)
         if(pwdLength === -1){
             pwd.innerHTML = "You must select the length of the password"
         }else if(!lowercase && !uppercase && !number && !symbol){
